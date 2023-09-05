@@ -171,7 +171,7 @@ type DebuggerState = {
 - `~` means the request/event hasn't been modified, but the behavior is different
   (or not immediately apparent) in symbolic debugging
 - `+` means the request/event has been extended in some way
-- `*` denotes a request/event new for the S-DAP
+- `*` denotes a request/event new for the SEDAP
 
 ## Lifecycle
 

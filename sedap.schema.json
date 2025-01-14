@@ -1,0 +1,294 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "SEDAP",
+  "description": "An extension of the Debug Adapter Protocol for debugging symbolic execution.",
+  "type": "object",
+
+  "definitions": {
+    "BranchCase": {
+      "description": "The type of a branch case is arbitrary and implementation-dependent.\nThe UI should essentially treat this as a black box to pass back to the debugger when calling \"stepSpecific\".",
+      "_any": true,
+      "tsType": "unknown"
+    },
+    "MapNodeNext": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "single"
+            },
+            "id": {
+              "type": ["string", "null"]
+            }
+          },
+          "required": [ "kind", "id" ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "branch"
+            },
+            "cases": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "minProperties": 1,
+                "properties": {
+                  "branchLabel": {
+                    "type": "string"
+                  },
+                  "branchCase": { "$ref": "#/definitions/BranchCase" },
+                  "id": {
+                    "type": ["string", "null"]
+                  }
+                },
+                "required": [ "branchLabel", "branchCase", "id" ]
+              }
+            }
+          },
+          "required": [ "kind", "cases" ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "final"
+            }
+          },
+          "required": [ "kind" ]
+        }
+      ]
+    },
+    "MapNodeExtra": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "badge"
+            },
+            "text": {
+              "type": "string"
+            },
+            "tag": {
+              "type": "string"
+            }
+          },
+          "required": [ "kind", "text" ]
+        }
+      ]
+    },
+    "MapNodeOptions": {
+      "oneOf": [
+        {
+          "description": "A basic, general-purpose node.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "basic"
+            },
+            "display": {
+              "type": "string"
+            },
+            "selectable": {
+              "type": "boolean"
+            },
+            "extras": {
+              "type": "array",
+              "items": { "$ref": "#/definitions/MapNodeExtra" }
+            }
+          },
+          "required": [ "kind", "display" ]
+        },
+        {
+          "description": "An emphasised root node, with no previous node.",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "root"
+            },
+            "title": {
+              "type": "string"
+            },
+            "subtitle": {
+              "type": "string"
+            },
+            "zoomable": {
+              "type": "boolean"
+            },
+            "extras": {
+              "type": "array",
+              "items": { "$ref": "#/definitions/MapNodeExtra" }
+            }
+          },
+          "required": [ "kind", "title" ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "custom"
+            },
+            "customKind": {
+              "type": "string"
+            },
+            "customOptions": {
+              "_any": true,
+              "tsType": "unknown"
+            }
+          },
+          "required": [ "kind", "customKind", "customOptions" ]
+        }
+      ]
+    },
+    "MapNode": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "aliases": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "submaps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "next": { "$ref": "#/definitions/MapNodeNext" },
+        "options": { "$ref": "#/definitions/MapNodeOptions" }
+      },
+      "required": [ "id", "next", "options" ]
+    },
+    "MapUpdateEventBody": {
+      "type": "object",
+      "properties": {
+        "nodes": {
+          "type": "object",
+          "description": "An object of map nodes to update, where a key is the node's ID, or null to specify node deleting the node at that ID.",
+          "additionalProperties": {
+            "oneOf": [
+              { "$ref": "#/definitions/MapNode" },
+              { "type": "null" }
+            ]
+          },
+          "default": {}
+        },
+        "roots": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "currentSteps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+				"reset": {
+					"type": "boolean",
+					"description": "If true, the map should be reset to its initial state; this event contains the full map and previous information can be discarded.",
+					"default": false
+				},
+        "ext": {
+          "_any": true
+        }
+      }
+    },
+    "MapUpdateEvent": {
+      "allOf": [ { "$ref": "dap.schema.json#/definitions/Event" }, {
+        "type": "object",
+        "description": "The event indicates that the execution map has been updated with new information.\nThis is typically sent alongside the \"stopped\" event.",
+        "properties": {
+          "event": {
+            "type": "string",
+            "enum": [ "mapUpdate" ]
+          },
+          "body": { "$ref": "#/definitions/MapUpdateEventBody" }
+        },
+        "required": [ "event", "body" ]
+      }]
+    },
+
+    "StepSpecificRequest": {
+      "allOf": [ { "$ref": "dap.schema.json#/definitions/Request" }, {
+        "type": "object",
+        "description": "The request starts the debugger to step from a specific point in execution, in a specific direction in the case of branching.\nWhen there is no branch, this is equivalent to \"jump\" followed by \"stepIn\".\nErrors if a branch is present and no branch case is supplied, or a branch case is supplied where ther is no branch.",
+        "properties": {
+          "command": {
+            "type": "string",
+            "enum": [ "stepSpecific" ]
+          },
+          "arguments": {
+            "$ref": "#/definitions/StepSpecificArguments"
+          }
+        },
+        "required": [ "command", "arguments"  ]
+      }]
+    },
+    "StepSpecificArguments": {
+      "type": "object",
+      "description": "Arguments for 'stepSpecific' request.",
+      "properties": {
+        "stepId": {
+          "type": "string",
+          "description": "The id of the execution node to step from."
+        },
+        "branchCase": {
+          "description": "The branch case to step in.",
+          "$ref": "#/definitions/BranchCase"
+        }
+      },
+      "required": [ "stepId" ]
+    },
+    "StepSpecificResponse": {
+      "allOf": [ { "$ref": "dap.schema.json#/definitions/Response" }, {
+        "type": "object",
+        "description": "Response to 'stepSpecific' request. This is just an acknowledgement, so no body field is required."
+      }]
+    },
+
+    "JumpRequest": {
+      "allOf": [ { "$ref": "dap.schema.json#/definitions/Request" }, {
+        "type": "object",
+        "description": "The request causes the exeuction state to jump to another (existing) point in execution.",
+        "properties": {
+          "command": {
+            "type": "string",
+            "enum": [ "jump" ]
+          },
+          "arguments": {
+            "$ref": "#/definitions/JumpArguments"
+          }
+        },
+        "required": [ "command", "arguments"  ]
+      }]
+    },
+    "JumpArguments": {
+      "type": "object",
+      "description": "Arguments for 'jump'' request.",
+      "properties": {
+        "stepId": {
+          "type": "string",
+          "description": "The id of the execution node to jump to."
+        }
+      },
+      "required": [ "stepId" ]
+    },
+    "JumpResponse": {
+      "allOf": [ { "$ref": "dap.schema.json#/definitions/Response" }, {
+        "type": "object",
+        "description": "Response to 'jump' request. This is just an acknowledgement, so no body field is required."
+      }]
+    }
+  }
+}

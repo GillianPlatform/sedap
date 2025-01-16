@@ -289,6 +289,37 @@
         "type": "object",
         "description": "Response to 'jump' request. This is just an acknowledgement, so no body field is required."
       }]
+    },
+
+    "GetFullMapRequest": {
+      "allOf": [ { "$ref": "dap.schema.json#/definitions/Request" }, {
+        "type": "object",
+        "properties": {
+          "command": {
+            "type": "string",
+            "enum": [ "jump" ]
+          },
+          "arguments": {
+            "$ref": "#/definitions/GetFullMapArguments"
+          }
+        },
+        "required": [ "command", "arguments"  ]
+      }]
+    },
+    "GetFullMapArguments": {
+      "type": "object",
+      "description": "The 'getFullMap' request takes no arguments.",
+      "properties": {}
+    },
+    "GetFullMapResponse": {
+      "allOf": [ { "$ref": "dap.schema.json#/definitions/Response" }, {
+        "type": "object",
+        "properties":{
+          "body": {
+            "$ref": "#/definitions/MapUpdateEventBody"
+          }
+        }
+      }]
     }
   }
 }

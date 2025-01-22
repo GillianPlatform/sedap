@@ -189,9 +189,20 @@
           }
         },
         "currentSteps": {
-          "type": "array",
-          "items": {
-            "type": "string"
+          "type": "object",
+          "properties": {
+            "primary": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "secondary": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
           }
         },
 				"reset": {

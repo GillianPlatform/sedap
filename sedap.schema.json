@@ -308,7 +308,7 @@
         "properties": {
           "command": {
             "type": "string",
-            "enum": [ "jump" ]
+            "enum": [ "getFullMap" ]
           },
           "arguments": {
             "$ref": "#/definitions/GetFullMapArguments"

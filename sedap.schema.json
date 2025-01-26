@@ -329,7 +329,8 @@
           "body": {
             "$ref": "#/definitions/MapUpdateEventBody"
           }
-        }
+        },
+        "required": [ "body" ]
       }]
     }
   }

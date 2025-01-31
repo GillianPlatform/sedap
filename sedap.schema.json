@@ -168,6 +168,18 @@
       },
       "required": [ "id", "next", "options" ]
     },
+    "MapRoot": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name" : {
+          "type": "string"
+        }
+      },
+      "required": ["id", "name"]
+    },
     "MapUpdateEventBody": {
       "type": "object",
       "properties": {
@@ -183,10 +195,11 @@
           "default": {}
         },
         "roots": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MapRoot"
+          },
+          "default": []
         },
         "currentSteps": {
           "type": "object",

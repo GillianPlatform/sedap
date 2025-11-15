@@ -5,63 +5,24 @@
   "type": "object",
 
   "definitions": {
-    "BranchCase": {
-      "description": "The type of a branch case is arbitrary and implementation-dependent.\nThe UI should essentially treat this as a black box to pass back to the debugger when calling \"stepSpecific\".",
-      "_any": true,
-      "tsType": "unknown"
-    },
     "MapNodeNext": {
-      "oneOf": [
-        {
-          "type": "object",
-          "properties": {
-            "kind": {
-              "const": "single"
-            },
-            "id": {
-              "type": ["string", "null"]
-            }
+      "type": "array",
+      "items": {
+        "type": "object",
+        "minProperties": 1,
+        "properties": {
+          "label": {
+            "type": "string"
           },
-          "required": [ "kind", "id" ]
+          "stepId": {
+            "type": "string"
+          }
         },
-        {
-          "type": "object",
-          "properties": {
-            "kind": {
-              "const": "branch"
-            },
-            "cases": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "minProperties": 1,
-                "properties": {
-                  "branchLabel": {
-                    "type": "string"
-                  },
-                  "branchCase": { "$ref": "#/definitions/BranchCase" },
-                  "id": {
-                    "type": ["string", "null"]
-                  }
-                },
-                "required": [ "branchLabel", "branchCase", "id" ]
-              }
-            }
-          },
-          "required": [ "kind", "cases" ]
-        },
-        {
-          "type": "object",
-          "properties": {
-            "kind": {
-              "const": "final"
-            }
-          },
-          "required": [ "kind" ]
-        }
-      ]
+        "required": [ "stepId" ]
+      }
     },
     "MapNodeExtra": {
+      "description": "Additional, optional details to attach to a node",
       "oneOf": [
         {
           "type": "object",
@@ -93,6 +54,7 @@
       ]
     },
     "MapNodeOptions": {
+      "description": "The kind of map node, with appropriate options",
       "oneOf": [
         {
           "description": "A basic, general-purpose node.",
@@ -142,6 +104,16 @@
           "required": [ "kind", "title" ]
         },
         {
+          "description": "An 'empty' node, representing a pending computation",
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "pending"
+            }
+          },
+          "required": [ "kind" ]
+        },
+        {
           "type": "object",
           "properties": {
             "kind": {
@@ -162,7 +134,7 @@
     "MapNode": {
       "type": "object",
       "properties": {
-        "id": {
+        "stepId": {
           "type": "string"
         },
         "aliases": {
@@ -182,19 +154,19 @@
         "next": { "$ref": "#/definitions/MapNodeNext" },
         "options": { "$ref": "#/definitions/MapNodeOptions" }
       },
-      "required": [ "id", "next", "options" ]
+      "required": [ "stepId", "next", "options" ]
     },
     "MapRoot": {
       "type": "object",
       "properties": {
-        "id": {
+        "mapId": {
           "type": "string"
         },
         "name" : {
           "type": "string"
         }
       },
-      "required": ["id", "name"]
+      "required": ["mapId", "name"]
     },
     "MapUpdateEventBody": {
       "type": "object",
@@ -234,11 +206,11 @@
             }
           }
         },
-				"reset": {
-					"type": "boolean",
-					"description": "If true, the map should be reset to its initial state; this event contains the full map and previous information can be discarded.",
-					"default": false
-				},
+        "reset": {
+          "type": "boolean",
+          "description": "If true, the map should be reset to its initial state; this event contains the full map and previous information can be discarded.",
+          "default": false
+        },
         "ext": {
           "_any": true
         }
@@ -256,44 +228,6 @@
           "body": { "$ref": "#/definitions/MapUpdateEventBody" }
         },
         "required": [ "event", "body" ]
-      }]
-    },
-
-    "StepSpecificRequest": {
-      "allOf": [ { "$ref": "dap.schema.json#/definitions/Request" }, {
-        "type": "object",
-        "description": "The request starts the debugger to step from a specific point in execution, in a specific direction in the case of branching.\nWhen there is no branch, this is equivalent to \"jump\" followed by \"stepIn\".\nErrors if a branch is present and no branch case is supplied, or a branch case is supplied where ther is no branch.",
-        "properties": {
-          "command": {
-            "type": "string",
-            "enum": [ "stepSpecific" ]
-          },
-          "arguments": {
-            "$ref": "#/definitions/StepSpecificArguments"
-          }
-        },
-        "required": [ "command", "arguments"  ]
-      }]
-    },
-    "StepSpecificArguments": {
-      "type": "object",
-      "description": "Arguments for 'stepSpecific' request.",
-      "properties": {
-        "stepId": {
-          "type": "string",
-          "description": "The id of the execution node to step from."
-        },
-        "branchCase": {
-          "description": "The branch case to step in.",
-          "$ref": "#/definitions/BranchCase"
-        }
-      },
-      "required": [ "stepId" ]
-    },
-    "StepSpecificResponse": {
-      "allOf": [ { "$ref": "dap.schema.json#/definitions/Response" }, {
-        "type": "object",
-        "description": "Response to 'stepSpecific' request. This is just an acknowledgement, so no body field is required."
       }]
     },
 

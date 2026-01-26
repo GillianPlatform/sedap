@@ -3,7 +3,6 @@
   "title": "SEDAP",
   "description": "An extension of the Debug Adapter Protocol for debugging symbolic execution.",
   "type": "object",
-
   "definitions": {
     "MapNodeNext": {
       "type": "array",
@@ -18,7 +17,9 @@
             "type": "string"
           }
         },
-        "required": [ "stepId" ]
+        "required": [
+          "stepId"
+        ]
       }
     },
     "MapNodeExtra": {
@@ -37,7 +38,10 @@
               "type": "string"
             }
           },
-          "required": [ "kind", "text" ]
+          "required": [
+            "kind",
+            "text"
+          ]
         },
         {
           "type": "object",
@@ -49,7 +53,10 @@
               "type": "string"
             }
           },
-          "required": [ "kind", "text" ]
+          "required": [
+            "kind",
+            "text"
+          ]
         }
       ]
     },
@@ -66,19 +73,37 @@
             "display": {
               "type": "string"
             },
-            "selectable": {
-              "type": "boolean"
+            "controls": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "jump",
+                  "stepIn",
+                  "stepOver"
+                ]
+              }
             },
             "highlight": {
               "type": "string",
-              "enum": [ "error", "warning", "info", "success" ]
+              "enum": [
+                "error",
+                "warning",
+                "info",
+                "success"
+              ]
             },
             "extras": {
               "type": "array",
-              "items": { "$ref": "#/definitions/MapNodeExtra" }
+              "items": {
+                "$ref": "#/definitions/MapNodeExtra"
+              }
             }
           },
-          "required": [ "kind", "display" ]
+          "required": [
+            "kind",
+            "display"
+          ]
         },
         {
           "description": "An emphasised root node, with no previous node.",
@@ -98,10 +123,15 @@
             },
             "extras": {
               "type": "array",
-              "items": { "$ref": "#/definitions/MapNodeExtra" }
+              "items": {
+                "$ref": "#/definitions/MapNodeExtra"
+              }
             }
           },
-          "required": [ "kind", "title" ]
+          "required": [
+            "kind",
+            "title"
+          ]
         },
         {
           "description": "An 'empty' node, representing a pending computation",
@@ -111,7 +141,9 @@
               "const": "pending"
             }
           },
-          "required": [ "kind" ]
+          "required": [
+            "kind"
+          ]
         },
         {
           "type": "object",
@@ -127,7 +159,11 @@
               "tsType": "unknown"
             }
           },
-          "required": [ "kind", "customKind", "customOptions" ]
+          "required": [
+            "kind",
+            "customKind",
+            "customOptions"
+          ]
         }
       ]
     },
@@ -151,10 +187,18 @@
           },
           "default": []
         },
-        "next": { "$ref": "#/definitions/MapNodeNext" },
-        "options": { "$ref": "#/definitions/MapNodeOptions" }
+        "next": {
+          "$ref": "#/definitions/MapNodeNext"
+        },
+        "options": {
+          "$ref": "#/definitions/MapNodeOptions"
+        }
       },
-      "required": [ "stepId", "next", "options" ]
+      "required": [
+        "stepId",
+        "next",
+        "options"
+      ]
     },
     "MapRoot": {
       "type": "object",
@@ -162,11 +206,14 @@
         "mapId": {
           "type": "string"
         },
-        "name" : {
+        "name": {
           "type": "string"
         }
       },
-      "required": ["mapId", "name"]
+      "required": [
+        "mapId",
+        "name"
+      ]
     },
     "MapUpdateEventBody": {
       "type": "object",
@@ -176,8 +223,12 @@
           "description": "An object of map nodes to update, where a key is the node's ID, or null to specify node deleting the node at that ID.",
           "additionalProperties": {
             "oneOf": [
-              { "$ref": "#/definitions/MapNode" },
-              { "type": "null" }
+              {
+                "$ref": "#/definitions/MapNode"
+              },
+              {
+                "type": "null"
+              }
             ]
           },
           "default": {}
@@ -217,35 +268,56 @@
       }
     },
     "MapUpdateEvent": {
-      "allOf": [ { "$ref": "dap.schema.json#/definitions/Event" }, {
-        "type": "object",
-        "description": "The event indicates that the execution map has been updated with new information.\nThis is typically sent alongside the \"stopped\" event.",
-        "properties": {
-          "event": {
-            "type": "string",
-            "enum": [ "mapUpdate" ]
-          },
-          "body": { "$ref": "#/definitions/MapUpdateEventBody" }
+      "allOf": [
+        {
+          "$ref": "dap.schema.json#/definitions/Event"
         },
-        "required": [ "event", "body" ]
-      }]
+        {
+          "type": "object",
+          "description": "The event indicates that the execution map has been updated with new information.\nThis is typically sent alongside the \"stopped\" event.",
+          "properties": {
+            "event": {
+              "type": "string",
+              "enum": [
+                "mapUpdate"
+              ]
+            },
+            "body": {
+              "$ref": "#/definitions/MapUpdateEventBody"
+            }
+          },
+          "required": [
+            "event",
+            "body"
+          ]
+        }
+      ]
     },
-
     "JumpRequest": {
-      "allOf": [ { "$ref": "dap.schema.json#/definitions/Request" }, {
-        "type": "object",
-        "description": "The request causes the exeuction state to jump to another (existing) point in execution.",
-        "properties": {
-          "command": {
-            "type": "string",
-            "enum": [ "jump" ]
-          },
-          "arguments": {
-            "$ref": "#/definitions/JumpArguments"
-          }
+      "allOf": [
+        {
+          "$ref": "dap.schema.json#/definitions/Request"
         },
-        "required": [ "command", "arguments"  ]
-      }]
+        {
+          "type": "object",
+          "description": "The request causes the exeuction state to jump to another (existing) point in execution.",
+          "properties": {
+            "command": {
+              "type": "string",
+              "enum": [
+                "jump"
+              ]
+            },
+            "arguments": {
+              "$ref": "#/definitions/JumpArguments"
+            }
+          },
+          "required": [
+            "command",
+            "arguments"
+          ]
+        }
+      ]
     },
     "JumpArguments": {
       "type": "object",
@@ -256,29 +328,45 @@
           "description": "The id of the execution node to jump to."
         }
       },
-      "required": [ "stepId" ]
+      "required": [
+        "stepId"
+      ]
     },
     "JumpResponse": {
-      "allOf": [ { "$ref": "dap.schema.json#/definitions/Response" }, {
-        "type": "object",
-        "description": "Response to 'jump' request. This is just an acknowledgement, so no body field is required."
-      }]
-    },
-
-    "GetFullMapRequest": {
-      "allOf": [ { "$ref": "dap.schema.json#/definitions/Request" }, {
-        "type": "object",
-        "properties": {
-          "command": {
-            "type": "string",
-            "enum": [ "getFullMap" ]
-          },
-          "arguments": {
-            "$ref": "#/definitions/GetFullMapArguments"
-          }
+      "allOf": [
+        {
+          "$ref": "dap.schema.json#/definitions/Response"
         },
-        "required": [ "command", "arguments"  ]
-      }]
+        {
+          "type": "object",
+          "description": "Response to 'jump' request. This is just an acknowledgement, so no body field is required."
+        }
+      ]
+    },
+    "GetFullMapRequest": {
+      "allOf": [
+        {
+          "$ref": "dap.schema.json#/definitions/Request"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "command": {
+              "type": "string",
+              "enum": [
+                "getFullMap"
+              ]
+            },
+            "arguments": {
+              "$ref": "#/definitions/GetFullMapArguments"
+            }
+          },
+          "required": [
+            "command",
+            "arguments"
+          ]
+        }
+      ]
     },
     "GetFullMapArguments": {
       "type": "object",
@@ -286,15 +374,22 @@
       "properties": {}
     },
     "GetFullMapResponse": {
-      "allOf": [ { "$ref": "dap.schema.json#/definitions/Response" }, {
-        "type": "object",
-        "properties":{
-          "body": {
-            "$ref": "#/definitions/MapUpdateEventBody"
-          }
+      "allOf": [
+        {
+          "$ref": "dap.schema.json#/definitions/Response"
         },
-        "required": [ "body" ]
-      }]
+        {
+          "type": "object",
+          "properties": {
+            "body": {
+              "$ref": "#/definitions/MapUpdateEventBody"
+            }
+          },
+          "required": [
+            "body"
+          ]
+        }
+      ]
     }
   }
 }

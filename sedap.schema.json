@@ -293,6 +293,106 @@
         }
       ]
     },
+    "StepOverAtRequest": {
+      "allOf": [
+        {
+          "$ref": "dap.schema.json#/definitions/Request"
+        },
+        {
+          "type": "object",
+          "description": "The request causes the exeuction state to step-over from a specific point in execution.",
+          "properties": {
+            "command": {
+              "type": "string",
+              "enum": [
+                "stepOverAt"
+              ]
+            },
+            "arguments": {
+              "$ref": "#/definitions/StepOverAtArguments"
+            }
+          },
+          "required": [
+            "command",
+            "arguments"
+          ]
+        }
+      ]
+    },
+    "StepOverAtArguments": {
+      "type": "object",
+      "description": "Arguments for 'stepOverAt' request.",
+      "properties": {
+        "stepId": {
+          "type": "string",
+          "description": "The id of the execution node to step-over from."
+        }
+      },
+      "required": [
+        "stepId"
+      ]
+    },
+    "StepOverAtResponse": {
+      "allOf": [
+        {
+          "$ref": "dap.schema.json#/definitions/Response"
+        },
+        {
+          "type": "object",
+          "description": "Response to 'stepOverAt' request. This is just an acknowledgement, so no body field is required."
+        }
+      ]
+    },
+    "StepInAtRequest": {
+      "allOf": [
+        {
+          "$ref": "dap.schema.json#/definitions/Request"
+        },
+        {
+          "type": "object",
+          "description": "The request causes the exeuction state to step-in from a specific point in execution.",
+          "properties": {
+            "command": {
+              "type": "string",
+              "enum": [
+                "stepInAt"
+              ]
+            },
+            "arguments": {
+              "$ref": "#/definitions/StepInAtArguments"
+            }
+          },
+          "required": [
+            "command",
+            "arguments"
+          ]
+        }
+      ]
+    },
+    "StepInAtArguments": {
+      "type": "object",
+      "description": "Arguments for 'stepInAt' request.",
+      "properties": {
+        "stepId": {
+          "type": "string",
+          "description": "The id of the execution node to step-in from."
+        }
+      },
+      "required": [
+        "stepId"
+      ]
+    },
+    "StepInAtResponse": {
+      "allOf": [
+        {
+          "$ref": "dap.schema.json#/definitions/Response"
+        },
+        {
+          "type": "object",
+          "description": "Response to 'stepInAt' request. This is just an acknowledgement, so no body field is required."
+        }
+      ]
+    },
     "JumpRequest": {
       "allOf": [
         {
@@ -321,7 +421,7 @@
     },
     "JumpArguments": {
       "type": "object",
-      "description": "Arguments for 'jump'' request.",
+      "description": "Arguments for 'jump' request.",
       "properties": {
         "stepId": {
           "type": "string",
